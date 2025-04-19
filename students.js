@@ -1,12 +1,25 @@
 console.log('students.js is executing...');
 
-const div_list_of_students = document.getElementById('list_of_students');
+// const id_form_create_new_student = document.getElementById("id_form_create_new_student");
+// id_form_create_new_student.addEventListener('submit', handleCreateNewStudentEvent);
+
+// const div_create_new_student = document.getElementById("create_new_student");
+const div_show_student_details = document.getElementById("show_student_details");
+// const div_update_student_details = document.getElementById("update_student_details");
+// const div_delete_student = document.getElementById("delete_student");
+const div_list_of_students = document.getElementById("list_of_students");
+
 
 // TODO: add your code here
 document.addEventListener("DOMContentLoaded", async function()
 {
     await getAndDisplayAllStudents();
 });
+
+// =====================================================================================================================
+// Functions that interact with the API
+// =====================================================================================================================
+
 // GET method
 async function getAndDisplayAllStudents()
 {
@@ -64,5 +77,11 @@ function renderStudentAsHTML(studentAsJSON) {
             <p>Student First Name: ${studentAsJSON.firstName}</p>
             <p>Student Last Name: ${studentAsJSON.lastName}</p>
             <p>Student Birth Date: ${studentAsJSON.birthDate}</p>
+            <p>
+                <!-- TODO: this is for extra credit -->
+                <a href="students.show.html?student_id=${studentAsJSON.id}">Show this student</a>
+            </p>
+<!--            <button onclick="handleUpdateStudentDetailsEvent(event)">Update Student Details</button>-->
+<!--            <button onclick="handleDeleteStudentEvent(event)">Delete Student</button>-->
         </div>`;
 }
