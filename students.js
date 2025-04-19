@@ -6,7 +6,7 @@ id_form_create_new_student.addEventListener('submit', handleCreateNewStudentEven
 const div_create_new_student = document.getElementById("create_new_student");
 const div_show_student_details = document.getElementById("show_student_details");
 const div_update_student_details = document.getElementById("update_student_details");
-// const div_delete_student = document.getElementById("delete_student");
+const div_delete_student = document.getElementById("delete_student");
 const div_list_of_students = document.getElementById("list_of_students");
 
 
@@ -178,6 +178,35 @@ async function updateStudent(studentData)
     }
 }
 
+async function deleteStudent(studentId)
+{
+    const API_URL = `http://localhost:8080/students/${studentId}`;
+
+    try
+    {
+        const response = await fetch(API_URL, {method: "DELETE"});
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok)
+        {
+            div_delete_class.innerHTML = `<p class="success">Student with id ${studentId} deleted successfully</p>`;
+            await getAndDisplayAllStudents();
+        }
+        else
+        {
+            div_delete_student.innerHTML = `<p class="failure">ERROR: failed to delete the student with id ${studentId}</p>`;
+        }
+    }
+    catch (error)
+    {
+        console.error(error);
+        div_delete_student.innerHTML = `<p class="failure">ERROR: failed to connect to the API to delete the student with id ${studentId}</p>`;
+    }
+}
+
 // =====================================================================================================================
 // Functions that update the HTML by manipulating the DOM
 // =====================================================================================================================
@@ -221,7 +250,7 @@ function renderStudentAsHTML(studentAsJSON) {
             </p>
             <button onclick="handleShowStudentDetailsEvent(event)">Show Student Details</button>
             <button onclick="handleUpdateStudentDetailsEvent(event)">Update Student Details</button>
-<!--            <button onclick="handleDeleteStudentEvent(event)">Delete Student</button>-->
+            <button onclick="handleDeleteStudentEvent(event)">Delete Student</button>
         </div>`;
 }
 
@@ -301,4 +330,14 @@ async function handleUpdateStudentDetailsEvent(event)
     });
 
     console.log('handleUpdateStudentDetailsEvent - END');
+}
+
+async function handleDeleteStudentEvent(event)
+{
+    console.log('handleDeleteStudentEvent - START');
+    console.log(`event = ${event}`);
+    console.log({event});
+    const studentId = event.target.parentElement.getAttribute("data-id");
+    await deleteStudent(studentId);
+    console.log('handleDeleteStudentEvent - END');
 }
