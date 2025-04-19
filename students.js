@@ -60,6 +60,57 @@ async function getAndDisplayAllStudents()
     console.log('getAndDisplayAllStudents - END');
 }
 
+
+/**
+ * @param studentId the student's id that you want to retrieve
+ * @returns the student with id = student as JSON or null if the student could not be retrieved from the API
+ */
+async function getStudent(studentId)
+{
+    console.log(`getStudent(${studentId}) - START`);
+    console.log("studentId " + studentId);
+
+    const API_URL = 'http://localhost:8080/students/' + studentId;
+
+    console.log('Calling the API to get the student with id  ${studentId}...');
+
+    try
+    {
+        const response = await fetch(API_URL);
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok)
+        {
+            console.log("Retrieved the students successfully, now we just need to process them...");
+
+            const listStudentsAsJSON = await response.json();
+            console.log({listStudentsAsJSON});
+
+            return listStudentsAsJSON;
+        }
+        else
+        {
+            console.log(`ERROR: failed to retrieve the student with id ${studentId}...`);
+        }
+    }
+    catch(error)
+    {
+        console.log(error);
+        console.log(`ERROR: failed to retrieve the student with id ${studentId}...`);
+    }
+
+    console.log(`getStudent(${studentId}) - END`);
+
+    return null;
+}
+
+// =====================================================================================================================
+// Functions that update the HTML by manipulating the DOM
+// =====================================================================================================================
+
 function displayStudents(listOfStudentsAsJSON) {
     div_list_of_students.innerHTML = '';
 
@@ -81,7 +132,39 @@ function renderStudentAsHTML(studentAsJSON) {
                 <!-- TODO: this is for extra credit -->
                 <a href="students.show.html?student_id=${studentAsJSON.id}">Show this student</a>
             </p>
+            <button onclick="handleShowStudentDetailsEvent(event)">Show Student Details</button>
 <!--            <button onclick="handleUpdateStudentDetailsEvent(event)">Update Student Details</button>-->
 <!--            <button onclick="handleDeleteStudentEvent(event)">Delete Student</button>-->
         </div>`;
+}
+
+async function handleShowStudentDetailsEvent(event)
+{
+    console.log('handleShowStudentDetailsEvent -START');
+    console.log(`event = ${event}`);
+    console.log({event});
+    const studentId = event.target.parentElement.getAttribute('data-id');
+    let studentAsJSON = await getStudent(studentId);
+    console.log(studentAsJSON);
+    if (studentAsJSON == null)
+    {
+        div_show_student_details.innerHTML = `<p class="failure">ERROR: failed to retrieve the student with id ${studentId}</p>`;
+    }
+    else
+    {
+        displayStudentDetails(studentAsJSON);
+    }
+
+    console.log(studentAsJSON);
+}
+
+function displayStudentDetails(studentAsJSON)
+{
+    console.log({studentAsJSON});
+    div_show_student_details.innerHTML = `<div class="show-student-details" data-id="${studentAsJSON.id}"> 
+        <p>Student ID (this is just for debugging): ${studentAsJSON.id}</p> 
+        <p>Student First Name: ${studentAsJSON.firstName}</p> 
+        <p>Student Last Name: ${studentAsJSON.lastName}</p>
+        <p>Student Birth Date: ${studentAsJSON.birthDate}</p> 
+    </div>`;
 }
