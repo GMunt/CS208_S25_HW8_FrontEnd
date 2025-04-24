@@ -23,14 +23,14 @@
 <hr>
 
 <h2>Add a new student to a class</h2>
-<form id="id_form_add_new_student_to_a_class" action="http://localhost:8080/add_student_to_class" method="post">
+<form id="id_form_add_new_student_to_a_class">
     <label for="selectStudentForEnrollment">Student to enroll:</label>
     <select name="studentId" id="selectStudentForEnrollment">
         <!-- TODO: Make a call to the API to retrieve all the students and then update the list of options -->
         <option value="" disabled selected>Select a student</option>
-        <option value="1">Alice</option>
-        <option value="2">Bob</option>
-        <option value="3">Carol</option>
+<!--        <option value="1">Alice</option>-->
+<!--        <option value="2">Bob</option>-->
+<!--        <option value="3">Carol</option>-->
     </select>
     <br>
 
@@ -41,12 +41,15 @@
              to retrieve all the classes and then updates/refreshes this list of options
          -->
         <option value="" disabled selected>Select a class</option>
-        <option value="1">CS 410 Databases</option>
-        <option value="2">CS 408 Full Stack Web Development</option>
+<!--        <option value="1">CS 410 Databases</option>-->
+<!--        <option value="2">CS 408 Full Stack Web Development</option>-->
     </select>
     <br>
 
     <button type="submit">Enroll student in class</button>
+    <div id="enrollStudentInToClassAndUpdateDisplay">
+        Enrolled student in class status: NOT SELECTED
+    </div>
 </form>
 
 <hr>

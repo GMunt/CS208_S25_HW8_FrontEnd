@@ -2,6 +2,7 @@ console.log('registered_students.js is executing...');
 
 const div_select_class_for_enrollment= document.getElementById('selectClassForEnrollment');
 const div_list_of_registered_students= document.getElementById('list_of_registered_students');
+const div_enroll_student_in_to_class_and_update_display = document.getElementById('enrollStudentInToClassAndUpdateDisplay');
 
 document.addEventListener('DOMContentLoaded', async function()
 {
@@ -63,8 +64,9 @@ async function getAllAndDisplayRegisteredStudentsAndRefreshTheSelectStudentForEn
         {
             const listOfRegisteredStudentsAsJSON = await response.json();
             console.log({listOfRegisteredStudentsAsJSON});
+
             displayRegisteredStudents(listOfRegisteredStudentsAsJSON);
-            refreshTheListOfRegisteredStudents(listOfRegisteredStudentsAsJSON);
+            await getAllStudentsAndRefreshTheListOfStudents();
         }
         else
         {
@@ -77,6 +79,85 @@ async function getAllAndDisplayRegisteredStudentsAndRefreshTheSelectStudentForEn
         div_list_of_registered_students.innerHTML = '<p class="failure">ERROR: failed to connect to the API to fetch the registered students data.</p>';
     }
     console.log('getAllAndDisplayRegisteredStudentsAndRefreshTheSelectStudentForEnrollmentDropdown - STOP');
+}
+
+async function getAllStudentsAndRefreshTheListOfStudents()
+{
+    console.log('getAllStudents - START');
+
+    const API_URL = "http://localhost:8080/students";
+
+    try
+    {
+        const response = await fetch(API_URL);
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);3
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok)
+        {
+            const listOfStudentsAsJSON = await response.json();
+            console.log({listOfStudentsAsJSON});
+            refreshTheListOfStudents(listOfStudentsAsJSON);
+        }
+        else
+        {
+            div_enroll_student_in_to_class_and_update_display.innerHTML = '<p class="failure">ERROR: failed to retrieve the students.</p>';
+        }
+    }
+    catch (error)
+    {
+        console.error(error);
+        div_enroll_student_in_to_class_and_update_display.innerHTML = '<p class="failure">ERROR: failed to connect to API to retrieve the students.</p>';
+    }
+    console.log('getAllStudentsAndRefreshTheListOfStudents - STOP');
+}
+
+document.getElementById('id_form_add_new_student_to_a_class').addEventListener('submit', async function (event)
+{
+    event.preventDefault();
+    await addStudentToClassAndRefreshListOfRegisteredStudents();
+});
+
+async function addStudentToClassAndRefreshListOfRegisteredStudents()
+{
+    const API_URL = 'http://localhost:8080/add_student_to_class';
+
+    try
+    {
+        const select_student_ID = document.getElementById('selectStudentForEnrollment');
+        const select_class_ID = document.getElementById('selectClassForEnrollment');
+
+        const bodyData = `studentId=${encodeURIComponent(select_student_ID.value)}&classId=${encodeURIComponent(select_class_ID.value)}`;
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: bodyData
+        });
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok)
+        {
+            div_enroll_student_in_to_class_and_update_display.innerHTML = `<p class="success">Student ${select_student_ID.value} was successfully registered in class ${select_class_ID.value}.</p>`;
+            await getAllAndDisplayRegisteredStudentsAndRefreshTheSelectStudentForEnrollmentDropdown();
+        }
+        else
+        {
+            div_enroll_student_in_to_class_and_update_display.innerHTML = `<p class="failure">ERROR: failed to add student ${select_student_ID.value} to class ${select_class_ID.value}.</p>`;
+        }
+    }
+    catch (error)
+    {
+        console.error(error);
+        div_enroll_student_in_to_class_and_update_display.innerHTML = `<p class="failure">ERROR: failed to connect to the API to fetch the registered students.</p>`;
+    }
 }
 
 function displayRegisteredStudents(listOfRegisteredStudentsAsJSON) {
@@ -122,7 +203,7 @@ function refreshTheSelectClassForEnrollmentDropdown(listOfClassesAsJSON)
         selectClassForEnrollment.appendChild(option);
     }
 }
-function refreshTheListOfRegisteredStudents(listOfRegisteredStudentsAsJSON)
+function refreshTheListOfStudents(listOfRegisteredStudentsAsJSON)
 {
     const selectStudentForEnrollment = document.getElementById("selectStudentForEnrollment");
 
@@ -142,7 +223,7 @@ function refreshTheListOfRegisteredStudents(listOfRegisteredStudentsAsJSON)
     {
         const option = document.createElement("option");
         option.value = studentAsJSON.id;
-        option.text = studentAsJSON.studentFullName;
+        option.text = studentAsJSON.firstName + " " + studentAsJSON.lastName;
 
         selectStudentForEnrollment.appendChild(option);
     }
