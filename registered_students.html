@@ -48,14 +48,31 @@
 
     <button type="submit">Enroll student in class</button>
     <div id="enrollStudentInToClassAndUpdateDisplay">
-        Enrolled student in class status: NOT SELECTED
+        No student selected yet...
     </div>
 </form>
 
 <hr>
 
 <h2>Drop an existing student from a class</h2>
+<form id="id_form_drop_student_from_a_class">
+    <label for="selectStudentToDrop">Student to drop:</label>
+    <select name="studentId" id="selectStudentToDrop">
+        <option value="" disabled selected>Select a student</option>
+    </select>
+    <br>
 
+    <label for="selectClassToDrop">Class to drop student from:</label>
+    <select name="classId" id="selectClassToDrop">
+        <option value="" disabled selected>Select a class</option>
+    </select>
+    <br>
+
+    <button type="submit">Drop student from class</button>
+    <div id="dropStudentFromClassAndUpdateDisplay">
+        No student selected yet...
+    </div>
+</form>
 <hr>
 
 <h2>Show all students that are taking a class</h2>
