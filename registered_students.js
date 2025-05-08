@@ -184,6 +184,7 @@ async function getAllAndDisplayRegisteredStudentsAndRefreshTheSelectStudentForDr
 
             await refreshTheSelectClassForDroppingDropdown(listOfRegisteredStudentsAsJSON);
             await getAllStudentsAndRefreshTheListOfStudents();
+            await displayRegisteredStudents(listOfRegisteredStudentsAsJSON);
         }
         else
         {
@@ -206,22 +207,20 @@ document.getElementById('id_form_drop_student_from_a_class').addEventListener('s
 
 async function dropStudentFromClassAndRefreshListOfRegisteredStudents()
 {
-    const API_URL = 'http://localhost:8080/drop_student_from_class';
-
     try
     {
         const select_student_ID = document.getElementById('selectStudentToDrop');
         const select_class_ID = document.getElementById('selectClassToDrop');
 
-        const bodyData = `studentId=${encodeURIComponent(select_student_ID.value)}&classId=${encodeURIComponent(select_class_ID.value)}`;
+        const studentId = select_student_ID.value;
+        const classId = select_class_ID.value;
 
-        const response = await fetch(API_URL, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: bodyData
+        const url = `http://localhost:8080/drop_student_from_class?studentId=${encodeURIComponent(studentId)}&classId=${encodeURIComponent(classId)}`;
+
+        const response = await fetch(url, {
+            method: 'DELETE'
         });
+
         console.log({response});
         console.log(`response.status = ${response.status}`);
         console.log(`response.statusText = ${response.statusText}`);
@@ -309,8 +308,16 @@ function refreshTheListOfRegisteredStudentsForDropping(listOfRegisteredStudentsA
     option.selected = true;
     selectStudentToDrop.appendChild(option);
 
-    for (const studentAsJSON of listOfRegisteredStudentsAsJSON)
-    {
+    // Track seen student IDs
+    const seenStudentIds = new Set();
+
+    for (const studentAsJSON of listOfRegisteredStudentsAsJSON) {
+        if (seenStudentIds.has(studentAsJSON.studentId)) {
+            continue; // Skip duplicates
+        }
+
+        seenStudentIds.add(studentAsJSON.studentId); // Mark as seen
+
         const option = document.createElement("option");
         option.value = studentAsJSON.studentId;
         option.text = studentAsJSON.studentFullName;
@@ -412,8 +419,16 @@ function refreshTheListOfStudents(listOfRegisteredStudentsAsJSON)
     option.selected = true;
     selectStudentForEnrollment.appendChild(option);
 
-    for (const studentAsJSON of listOfRegisteredStudentsAsJSON)
-    {
+    // Track seen student IDs
+    const seenStudentIds = new Set();
+
+    for (const studentAsJSON of listOfRegisteredStudentsAsJSON) {
+        if (seenStudentIds.has(studentAsJSON.id)) {
+            continue; // Skip if we've already seen this student
+        }
+
+        seenStudentIds.add(studentAsJSON.id); // Mark this student as seen
+
         const option = document.createElement("option");
         option.value = studentAsJSON.id;
         option.text = studentAsJSON.firstName + " " + studentAsJSON.lastName;
