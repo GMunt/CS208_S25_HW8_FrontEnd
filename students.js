@@ -192,7 +192,7 @@ async function deleteStudent(studentId)
 
         if (response.ok)
         {
-            div_delete_class.innerHTML = `<p class="success">Student with id ${studentId} deleted successfully</p>`;
+            div_delete_student.innerHTML = `<p class="success">Student with id ${studentId} deleted successfully</p>`;
             await getAndDisplayAllStudents();
         }
         else
