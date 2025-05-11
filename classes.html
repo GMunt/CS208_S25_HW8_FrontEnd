@@ -50,6 +50,20 @@
 
     <hr>
 
+    <h2>Search for classes by credits</h2>
+    <form id="id_credit_search_form">
+        <label for="numCredits">Number of Credits to Search for:</label>
+        <input type="number" name="numCredits" placeholder="1" id="numCredits" min="1" max="10">
+        <br>
+
+        <button type="submit">Search</button>
+    </form>
+    <div id="show_classes_by_credits">
+        The details for the class returned from the API call will be shown here...
+    </div>
+
+    <hr>
+
     <h2>Update class details</h2>
     <div id="update_class_details">
         The form to update the class will be shown here...

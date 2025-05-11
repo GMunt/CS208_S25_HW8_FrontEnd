@@ -8,7 +8,16 @@ const div_show_class_details = document.getElementById("show_class_details");
 const div_update_class_details = document.getElementById("update_class_details");
 const div_delete_class = document.getElementById("delete_class");
 const div_list_of_classes = document.getElementById("list_of_classes");
+const div_show_classes_by_credits = document.getElementById("show_classes_by_credits");
+const id_form_get_all_classes_with_num_credits = document.getElementById("id_credit_search_form");
 
+
+id_form_get_all_classes_with_num_credits.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const numCredits = document.getElementById('numCredits').value;
+    await getAndDisplayAllClassesWithNumCredits(numCredits);
+});
 
 // // TODO: uncomment the following code to fetch and display the classes after the page loads
 document.addEventListener("DOMContentLoaded", async function()
@@ -97,6 +106,60 @@ async function getAndDisplayAllClasses()
     console.log('getAndDisplayAllClasses - END');
 }
 
+
+
+async function getAndDisplayAllClassesWithNumCredits(numCredits)
+{
+    console.log('getAndDisplayAllClassesWithNumCredits - START');
+
+    const API_URL = "http://localhost:8080/classes/credits/" + numCredits;
+
+    div_show_classes_by_credits.innerHTML = "Calling the API to get the list of classes...";
+
+    try
+    {
+        const response = await fetch(API_URL);
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok)
+        {
+            div_show_classes_by_credits.innerHTML = "Retrieved the classes successfully, now we just need to process them...";
+
+            const listOfClassesAsJSON = await response.json();
+            console.log({listOfClasses: listOfClassesAsJSON});
+
+            await displayCreditClasses(listOfClassesAsJSON);
+        }
+        else
+        {
+            div_show_classes_by_credits.innerHTML = `<p class="failure">ERROR: there are no classes with ${numCredits} credits.</p>`;
+        }
+    }
+    catch (error)
+    {
+        console.error(error);
+        div_show_classes_by_credits.innerHTML = '<p class="failure">ERROR: failed to connect to the API to fetch the classes data.</p>';
+    }
+
+    console.log('getAndDisplayAllClassesWithNumCredits - END');
+}
+
+async function displayCreditClasses(listOfClassesAsJSON)
+{
+    div_show_classes_by_credits.innerHTML = '';
+
+    // Loop through each class
+    for (const classAsJSON of listOfClassesAsJSON)
+    {
+        // Print out its results
+        console.log(classAsJSON);
+        // Add results to HTML
+        div_show_classes_by_credits.innerHTML += renderClassAsHTML(classAsJSON);
+    }
+}
 
 /**
  * @return the class with id = classId as JSON or null if the class could not be retrieved from the API
